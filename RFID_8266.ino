@@ -2,16 +2,16 @@
 #include "MFRC522.h"
 #include <FirebaseESP8266.h>
 #include <ESP8266WiFi.h>
-#include <ArduinoHttpClient.h>
 #include <WiFiClient.h>
 #include <TimeLib.h>
 
 #define RST_PIN D1
 #define SS_PIN D2
-#define WIFI_SSID "joten" 
-#define WIFI_PASSWORD "0871108067"
+#define WIFI_SSID "Solomon" 
+#define WIFI_PASSWORD "0878872337bo"
 #define FIREBASE_HOST "rfid-database-8c0f2-default-rtdb.asia-southeast1.firebasedatabase.app"
 #define FIREBASE_KEY "2nyECFKpBSthELM3cbV6rjxEQodeJSuaTQviU2iF"
+#define RELAY_PIN D4
 
 FirebaseData firebaseData;
 MFRC522 mfrc522(SS_PIN, RST_PIN);
@@ -25,6 +25,7 @@ void setup() {
   Serial.println("");
   Firebase.begin(FIREBASE_HOST, FIREBASE_KEY);
   setSyncProvider(getNtpTime);
+  pinMode(RELAY_PIN, OUTPUT);
   while (timeStatus() == timeNotSet) {
     delay(1000);
     Serial.println("Waiting for time synchronization...");
@@ -36,7 +37,9 @@ void loop() {
     rfid_in = rfid_read();
     Serial.println("===> " + rfid_in);
     sendToFirebase();
+    digitalWrite(RELAY_PIN, HIGH);
     delay(1000);
+    digitalWrite(RELAY_PIN, LOW);
   }
   delay(1);
 }
